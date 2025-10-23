@@ -1,10 +1,15 @@
 from fastapi.testclient import TestClient
 
-def test_root_redirect(client: TestClient):
-    """Test that the root endpoint redirects to the static index.html."""
+def test_root_redirect_success(client: TestClient):
+    """Test that the root endpoint returns 200 OK when serving index.html directly."""
     response = client.get("/")
-    assert response.status_code == 200 or response.status_code == 307
+    assert response.status_code == 200
     
+def test_root_redirect_redirect(client: TestClient):
+    """Test that the root endpoint returns 307 Temporary Redirect when redirecting to index.html."""
+    response = client.get("/", allow_redirects=False)
+    assert response.status_code == 307
+    assert "location" in response.headers
 def test_get_activities(client: TestClient):
     """Test retrieving the list of activities."""
     response = client.get("/activities")
